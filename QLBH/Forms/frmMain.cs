@@ -1,4 +1,5 @@
-﻿using System;
+﻿using QLBH.Models;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -12,9 +13,22 @@ namespace QLBH.Forms
 {
     public partial class frmMain : Form
     {
-        public frmMain()
+        private User user;
+        public frmMain(User u)
         {
             InitializeComponent();
+            this.user = u;
+        }
+
+        private void quảnTrịViênToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if(user.Role == Role.ADMIN)
+            {
+                this.Hide();
+                frmAdmin admin = new frmAdmin();
+                admin.ShowDialog();
+                this.Show();
+            }
         }
     }
 }

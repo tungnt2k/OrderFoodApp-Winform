@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
@@ -12,10 +13,18 @@ namespace QLBH.Models
     {
         [Key]
         public int Id { get; set; }
+        [Column(TypeName = "nvarchar")]
+        [StringLength(255)]
+        [DisplayName("Tên KH")]
+        public string CustomerName { get; set; }
+        [DisplayName("Thời gian checkout")]
         public DateTime Checkout { get; set; }
+        [DisplayName("Khách hàng đưa")]
         public float CustomerTake { get; set; }
+        [DisplayName("Trả lại khách")]
         public float ReturnCustomer { get; set; }
-        public bool Status { get; set; }
+        [DisplayName("Tổng tiền")]
+        public float TotalPrice { get; set; }
         [Required]
         public int StaffId { get; set; }
         public DateTime CreateAt { get; set; }

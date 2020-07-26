@@ -56,6 +56,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppContext.cs" />
+    <Compile Include="ConvertImage.cs" />
+    <Compile Include="Events\BillInfoArg.cs" />
     <Compile Include="Forms\frmAdmin.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -98,6 +100,26 @@
     <Compile Include="Migrations\202007251548344_update-food-properties.Designer.cs">
       <DependentUpon>202007251548344_update-food-properties.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202007260836596_add-column-CustomerName-in-table-Bill.cs" />
+    <Compile Include="Migrations\202007260836596_add-column-CustomerName-in-table-Bill.Designer.cs">
+      <DependentUpon>202007260836596_add-column-CustomerName-in-table-Bill.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202007260859178_add-image-to-food.cs" />
+    <Compile Include="Migrations\202007260859178_add-image-to-food.Designer.cs">
+      <DependentUpon>202007260859178_add-image-to-food.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202007260915061_required-image-for-food.cs" />
+    <Compile Include="Migrations\202007260915061_required-image-for-food.Designer.cs">
+      <DependentUpon>202007260915061_required-image-for-food.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202007261154409_add-total-price-column.cs" />
+    <Compile Include="Migrations\202007261154409_add-total-price-column.Designer.cs">
+      <DependentUpon>202007261154409_add-total-price-column.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202007261158169_drop-column-status-in-bill-table.cs" />
+    <Compile Include="Migrations\202007261158169_drop-column-status-in-bill-table.Designer.cs">
+      <DependentUpon>202007261158169_drop-column-status-in-bill-table.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Bill.cs" />
     <Compile Include="Models\BillInfo.cs" />
@@ -106,6 +128,18 @@
     <Compile Include="Models\User.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UserControls\ucFood.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControls\ucFood.Designer.cs">
+      <DependentUpon>ucFood.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\ucOrder.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControls\ucOrder.Designer.cs">
+      <DependentUpon>ucOrder.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="Forms\frmAdmin.resx">
       <DependentUpon>frmAdmin.cs</DependentUpon>
     </EmbeddedResource>
@@ -130,6 +164,21 @@
     <EmbeddedResource Include="Migrations\202007251548344_update-food-properties.resx">
       <DependentUpon>202007251548344_update-food-properties.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202007260836596_add-column-CustomerName-in-table-Bill.resx">
+      <DependentUpon>202007260836596_add-column-CustomerName-in-table-Bill.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202007260859178_add-image-to-food.resx">
+      <DependentUpon>202007260859178_add-image-to-food.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202007260915061_required-image-for-food.resx">
+      <DependentUpon>202007260915061_required-image-for-food.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202007261154409_add-total-price-column.resx">
+      <DependentUpon>202007261154409_add-total-price-column.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202007261158169_drop-column-status-in-bill-table.resx">
+      <DependentUpon>202007261158169_drop-column-status-in-bill-table.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -139,6 +188,12 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="UserControls\ucFood.resx">
+      <DependentUpon>ucFood.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserControls\ucOrder.resx">
+      <DependentUpon>ucOrder.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

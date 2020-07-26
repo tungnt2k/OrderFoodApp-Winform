@@ -32,5 +32,24 @@ namespace QLBH.Forms
             frmChangePass frm = new frmChangePass(user);
             frm.Show();
         }
+
+        private void btnStatistic_Click(object sender, EventArgs e)
+        {
+            List<Bill> bills;
+            float total;
+            using(var DbContext = new AppContext())
+            {
+                bills = DbContext.Bills.Where(b => b.StaffId == user.Id)
+                    .Where(b=>b.Checkout>dtpStartDate.Value)
+                    .Where(b=>b.Checkout<dtpEndDate.Value).ToList();
+                total = DbContext.Bills.Sum(b => b.TotalPrice);
+            }
+            dgvStatistic.DataSource = bills;
+            dgvStatistic.Columns["StaffId"].Visible = false;
+            dgvStatistic.Columns["Staff"].Visible = false;
+            dgvStatistic.Columns["BillInfos"].Visible = false;
+            lbTotal.Text = total.ToString();
+        }
+
     }
 }

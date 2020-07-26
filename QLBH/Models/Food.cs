@@ -18,6 +18,8 @@ namespace QLBH.Models
         [DisplayName("Tên món")]
         public string Name { get; set; }
         [Required]
+        public byte[] Content { get; set; }
+        [Required]
         [DisplayName("Giá")]
         public float Price { get; set; }
         [Required]
@@ -37,5 +39,7 @@ namespace QLBH.Models
             CreateAt = DateTime.Now;
             UpdateAt = DateTime.Now;
         }
+
+
     }
 }

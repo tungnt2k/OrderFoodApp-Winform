@@ -37,6 +37,18 @@ namespace QLBH.Forms
             {
                 users = DbContext.Users.ToList();
             }
+            cbbStaff.DisplayMember = "Text";
+            cbbStaff.ValueMember = "Value";
+            cbbStaff.Items.Clear();
+            if (users!=null)
+            {
+                cbbStaff.Items.Add(new { Text = "Chọn nhân viên", Value = 0 });
+                cbbStaff.SelectedIndex = cbbStaff.FindString("Chọn nhân viên");
+                users.ForEach(e =>
+                {
+                    cbbStaff.Items.Add(new { Text = e.DislayName, Value = e.Id });
+                });
+            }
 
             dgvUser.DataSource = users;
             dgvUser.Columns["Bills"].Visible = false;
@@ -51,6 +63,7 @@ namespace QLBH.Forms
             }
             cbbFoodCate.DisplayMember = "Text";
             cbbFoodCate.ValueMember = "Value";
+            cbbFoodCate.Items.Clear();
             foodCates.ForEach(e =>
             {
                 cbbFoodCate.Items.Add(new { Text = e.Name, Value = e.Id });
@@ -226,6 +239,7 @@ namespace QLBH.Forms
                 food.Price = price;   
             };
             food.FoodCategoryId = (cbbFoodCate.SelectedItem as dynamic).Value;
+            food.Content = ConvertImage.ImageToByteArray(pbFoodImage.Image);
             using (var DbContext = new AppContext())
             {
                 DbContext.Foods.Add(food);
@@ -242,7 +256,15 @@ namespace QLBH.Forms
                 Food food = DbContext.Foods.Find(currentFoodId);
                 if (food != null)
                 {
-                    DbContext.Foods.Remove(food);
+                    food.Name = tbFoodName.Text;
+                    float price;
+                    if (float.TryParse(tbFoodPrice.Text, out price))
+                    {
+                        food.Price = price;
+                    };
+                    food.FoodCategoryId = (cbbFoodCate.SelectedItem as dynamic).Value;
+                    food.Content = ConvertImage.ImageToByteArray(pbFoodImage.Image);
+                    DbContext.Foods.AddOrUpdate(food);
                     DbContext.SaveChanges();
                 }
             }
@@ -277,14 +299,62 @@ namespace QLBH.Forms
                     int FoodCateId;
                     if(int.TryParse(dgvFood.Rows[e.RowIndex].Cells["FoodCategoryId"].Value.ToString(), out FoodCateId))
                     {
-                        FoodCategory f = DbContext.FoodCategories.Find(FoodCateId);
-                        cbbFoodCate.SelectedIndex = cbbFoodCate.FindString(f.Name);
-                    }    
-                    
+                        FoodCategory fc = DbContext.FoodCategories.Find(FoodCateId);
+                        cbbFoodCate.SelectedIndex = cbbFoodCate.FindString(fc.Name);
+                    }
+
+                    Food f = DbContext.Foods.Find(FoodId);
+                    pbFoodImage.Image = ConvertImage.ByteArrayToImage(f.Content);
+
+
                 }    
                     
             }
             currentFoodId = FoodId;
+        }
+
+        private void btnOpenImage_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog dialog = new OpenFileDialog();
+
+            dialog.Title = "Open Image";
+            dialog.Filter = "Image files (*.jpg, *.jpeg, *.jpe, *.jfif, *.png) | *.jpg; *.jpeg; *.jpe; *.jfif; *.png";
+
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
+                pbFoodImage.Image = Image.FromFile(dialog.FileName);
+                pbFoodImage.SizeMode = PictureBoxSizeMode.StretchImage;
+            }
+
+            dialog.Dispose();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            List<Bill> bills;
+            float total;
+            int staffId = (cbbStaff.SelectedItem as dynamic).Value;
+            using (var DbContext = new AppContext())
+            {
+                if(staffId != 0)
+                {
+                    bills = DbContext.Bills.Where(b => b.StaffId == staffId)
+                    .Where(b => b.Checkout > dtpStartDate.Value)
+                    .Where(b => b.Checkout < dtpEndDate.Value).ToList();
+                }
+                else
+                {
+                    bills = DbContext.Bills
+                    .Where(b => b.Checkout > dtpStartDate.Value)
+                    .Where(b => b.Checkout < dtpEndDate.Value).ToList();
+                }
+                
+                total = DbContext.Bills.Sum(b => b.TotalPrice);
+            }
+            dgvStatistic.DataSource = bills;
+            dgvStatistic.Columns["Staff"].Visible = false;
+            dgvStatistic.Columns["BillInfos"].Visible = false;
+            lbTotalStatistic.Text = total.ToString();
         }
     }
 }

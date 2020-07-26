@@ -29,6 +29,18 @@ namespace QLBH.Forms
                 admin.ShowDialog();
                 this.Show();
             }
+            else
+            {
+                MessageBox.Show("Bạn phải có quyền ADMIN để truy cập", "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+            }
+        }
+
+        private void thôngTinTàiKhoảnToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.Hide();
+            frmUserInfo userInfo = new frmUserInfo(user);
+            userInfo.ShowDialog();
+            this.Show();
         }
     }
 }

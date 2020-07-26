@@ -21,12 +21,13 @@ namespace QLBH.Forms
         private List<User> users;
         private List<Food> foods;
         private List<FoodCategory> foodCates;
-        private int currentFoodCateId;
-        private int currentUserId;
+        private int? currentFoodCateId;
+        private int? currentUserId;
+        private int? currentFoodId;
         private void frmAdmin_Load(object sender, EventArgs e)
         {
-            LoadFood();
             LoadFoodCates();
+            LoadFood();
             LoadUser();
         }
 
@@ -38,9 +39,8 @@ namespace QLBH.Forms
             }
 
             dgvUser.DataSource = users;
-            dgvUser.Columns["Id"].Visible = false;
             dgvUser.Columns["Bills"].Visible = false;
-            dgvUser.CurrentCell = null;
+            dgvUser.ClearSelection();
         }
 
         private void LoadFood()
@@ -49,6 +49,17 @@ namespace QLBH.Forms
             {
                 foods = DbContext.Foods.ToList();
             }
+            cbbFoodCate.DisplayMember = "Text";
+            cbbFoodCate.ValueMember = "Value";
+            foodCates.ForEach(e =>
+            {
+                cbbFoodCate.Items.Add(new { Text = e.Name, Value = e.Id });
+            });
+
+            dgvFood.DataSource = foods;
+            dgvFood.Columns["BillInfos"].Visible = false;
+            dgvFood.Columns["FoodCategory"].Visible = false;
+            dgvFood.ClearSelection();
         }
         private void LoadFoodCates()
         {
@@ -57,9 +68,8 @@ namespace QLBH.Forms
                 foodCates = DbContext.FoodCategories.ToList();
             }
             dgvFoodCate.DataSource = foodCates;
-            dgvFoodCate.Columns["Id"].Visible = false;
             dgvFoodCate.Columns["foods"].Visible = false;
-            dgvFoodCate.CurrentCell = null;
+            dgvFoodCate.ClearSelection();
         }
 
         private void btnAddCate_Click(object sender, EventArgs e)
@@ -72,17 +82,10 @@ namespace QLBH.Forms
                 DbContext.SaveChanges();
             }
             LoadFoodCates();
+            tbCateName.Text = "";
         }
 
 
-        private void dgvFoodCate_SelectionChanged(object sender, EventArgs e)
-        {
-            if (dgvFoodCate.CurrentCell != null)
-            {
-                currentFoodCateId = int.Parse(dgvFoodCate.Rows[dgvFoodCate.CurrentCell.RowIndex].Cells["Id"].Value.ToString());
-                tbCateName.Text = dgvFoodCate.Rows[dgvFoodCate.CurrentCell.RowIndex].Cells["Name"].Value.ToString();
-            }
-        }
 
         private void btnUpdateCate_Click(object sender, EventArgs e)
         {
@@ -98,7 +101,8 @@ namespace QLBH.Forms
                 }
             }
             LoadFoodCates();
-
+            tbCateName.Text = "";
+            currentFoodCateId = null;
         }
 
         private void btnDeleteCate_Click(object sender, EventArgs e)
@@ -113,23 +117,13 @@ namespace QLBH.Forms
                 }
             }
             LoadFoodCates();
-        }
-
-        private void dgvUser_SelectionChanged(object sender, EventArgs e)
-        {
-            if (dgvUser.CurrentCell != null)
-            {
-                currentUserId = int.Parse(dgvUser.Rows[dgvUser.CurrentCell.RowIndex].Cells["Id"].Value.ToString());
-                tbDislayNameUser.Text = dgvUser.Rows[dgvUser.CurrentCell.RowIndex].Cells["DislayName"].Value.ToString();
-                tbUsername.Text = dgvUser.Rows[dgvUser.CurrentCell.RowIndex].Cells["Username"].Value.ToString();
-                tbPassword.Text = dgvUser.Rows[dgvUser.CurrentCell.RowIndex].Cells["Password"].Value.ToString();
-                rBtnAdmin.Checked = (Role)dgvUser.Rows[dgvUser.CurrentCell.RowIndex].Cells["Role"].Value == Role.ADMIN ? true : false;
-                rBtnStaff.Checked = (Role)dgvUser.Rows[dgvUser.CurrentCell.RowIndex].Cells["Role"].Value == Role.STAFF ? true : false;
-            }
+            tbCateName.Text = "";
+            currentFoodCateId = null;
         }
 
         private void btnAddUser_Click(object sender, EventArgs e)
         {
+
             User user = new User();
             user.Username = tbUsername.Text;
             user.Password = tbPassword.Text;
@@ -141,6 +135,8 @@ namespace QLBH.Forms
                 DbContext.SaveChanges();
             }
             LoadUser();
+            ResetUserData();
+
         }
 
         private void btnUpdateUser_Click(object sender, EventArgs e)
@@ -160,6 +156,7 @@ namespace QLBH.Forms
                 }
             }
             LoadUser();
+            ResetUserData();
         }
 
         private void btnDeleteUser_Click(object sender, EventArgs e)
@@ -174,7 +171,120 @@ namespace QLBH.Forms
                 }
             }
             LoadUser();
+            ResetUserData();
         }
 
+        private void ResetUserData()
+        {
+            currentUserId = null;
+            tbDislayNameUser.Text = "";
+            tbUsername.Text = "";
+            tbPassword.Text = "";
+            rBtnAdmin.Checked =  false;
+            rBtnStaff.Checked =  false;
+        }
+
+        private void ResetFoodData()
+        {
+            currentFoodId = null;
+            tbFoodName.Text = "";
+            tbFoodPrice.Text = "";
+            cbbFoodCate.SelectedItem = "";
+        }
+
+        private void dgvUser_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            int UserId;
+            if(int.TryParse(dgvUser.Rows[e.RowIndex].Cells["Id"].Value.ToString(),out UserId))
+            {
+                tbDislayNameUser.Text = dgvUser.Rows[e.RowIndex].Cells["DislayName"].Value.ToString();
+                tbUsername.Text = dgvUser.Rows[e.RowIndex].Cells["Username"].Value.ToString();
+                tbPassword.Text = dgvUser.Rows[e.RowIndex].Cells["Password"].Value.ToString();
+                rBtnAdmin.Checked = (Role)dgvUser.Rows[e.RowIndex].Cells["Role"].Value == Role.ADMIN ? true : false;
+                rBtnStaff.Checked = (Role)dgvUser.Rows[e.RowIndex].Cells["Role"].Value == Role.STAFF ? true : false;
+            }
+            currentUserId = UserId;
+        }
+
+        private void dgvFoodCate_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            int CateId;
+            if (int.TryParse(dgvFoodCate.Rows[e.RowIndex].Cells["Id"].Value.ToString(), out CateId))
+            {
+                tbCateName.Text = dgvFoodCate.Rows[e.RowIndex].Cells["Name"].Value.ToString();
+            }
+            currentFoodCateId = CateId;
+        }
+
+        private void btnAddFood_Click(object sender, EventArgs e)
+        {
+            Food food= new Food();
+            food.Name = tbFoodName.Text;
+            float price;
+            if (float.TryParse(tbFoodPrice.Text, out price)) 
+            {
+                food.Price = price;   
+            };
+            food.FoodCategoryId = (cbbFoodCate.SelectedItem as dynamic).Value;
+            using (var DbContext = new AppContext())
+            {
+                DbContext.Foods.Add(food);
+                DbContext.SaveChanges();
+            }
+            LoadFood();
+            ResetFoodData();
+        }
+
+        private void btnUpdateFood_Click(object sender, EventArgs e)
+        {
+            using (var DbContext = new AppContext())
+            {
+                Food food = DbContext.Foods.Find(currentFoodId);
+                if (food != null)
+                {
+                    DbContext.Foods.Remove(food);
+                    DbContext.SaveChanges();
+                }
+            }
+            LoadFood();
+            ResetFoodData();
+        }
+
+        private void btnDeleteFood_Click(object sender, EventArgs e)
+        {
+            using (var DbContext = new AppContext())
+            {
+                Food food = DbContext.Foods.Find(currentFoodId);
+                if (food != null)
+                {
+                    DbContext.Foods.Remove(food);
+                    DbContext.SaveChanges();
+                }
+            }
+            LoadFood();
+            ResetFoodData();
+        }
+
+        private void dgvFood_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            int FoodId;
+            if (int.TryParse(dgvFood.Rows[e.RowIndex].Cells["Id"].Value.ToString(), out FoodId))
+            {
+                tbFoodName.Text = dgvFood.Rows[e.RowIndex].Cells["Name"].Value.ToString();
+                tbFoodPrice.Text = dgvFood.Rows[e.RowIndex].Cells["Price"].Value.ToString();
+                using (var DbContext = new AppContext())
+                {
+                    int FoodCateId;
+                    if(int.TryParse(dgvFood.Rows[e.RowIndex].Cells["FoodCategoryId"].Value.ToString(), out FoodCateId))
+                    {
+                        FoodCategory f = DbContext.FoodCategories.Find(FoodCateId);
+                        cbbFoodCate.SelectedIndex = cbbFoodCate.FindString(f.Name);
+                    }    
+                    
+                }    
+                    
+            }
+            currentFoodId = FoodId;
+        }
     }
 }
